@@ -17,6 +17,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/airidev/prompt_bot_project
+            
+            # Yangi kodni yuklab olish
             git pull origin main
-            # Agar requirements.txt bo'lsa: pip install -r requirements.txt
-            pm2 restart prompt_bot || pm2 start main.py --name "prompt_bot" --interpreter python3
+            
+            # Virtual muhitdagi pip orqali kutubxonalarni yangilash
+            ./venv/bin/pip install -r requirements.txt
+            
+            # Botni venv ichidagi python orqali restart qilish
+            pm2 restart prompt_bot || pm2 start main.py --name "prompt_bot" --interpreter ./venv/bin/python3
