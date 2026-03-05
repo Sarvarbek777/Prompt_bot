@@ -16,13 +16,22 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Loyiha papkasiga kirish
             cd /home/airidev/prompt_bot_project
             
-            # Yangi kodni yuklab olish
+            # GitHub-dan yangi kodni olish
             git pull origin main
             
-            # Virtual muhitdagi pip orqali kutubxonalarni yangilash
-            ./venv/bin/pip install -r requirements.txt
+            # Virtual muhitni tekshirish va kutubxonalarni o'rnatish
+            # Agar requirements.txt faylingiz bo'lsa, uni ishlatadi
+            if [ -f requirements.txt ]; then
+              ./venv/bin/pip install -r requirements.txt
+            else
+              ./venv/bin/pip install aiogram python-dotenv
+            fi
             
-            # Botni venv ichidagi python orqali restart qilish
+            # Botni restart qilish yoki birinchi marta yoqish
             pm2 restart prompt_bot || pm2 start main.py --name "prompt_bot" --interpreter ./venv/bin/python3
+            
+            # Sozlamalarni saqlab qo'yish
+            pm2 save
