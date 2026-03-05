@@ -1,0 +1,22 @@
+name: Prompt Bot Deploy CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH orqali serverga ulanish
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/airidev/prompt_bot_project
+            git pull origin main
+            # Agar requirements.txt bo'lsa: pip install -r requirements.txt
+            pm2 restart prompt_bot || pm2 start main.py --name "prompt_bot" --interpreter python3
